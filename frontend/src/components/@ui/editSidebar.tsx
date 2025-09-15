@@ -16,6 +16,7 @@ interface TodoData {
     description: string;
     priority: 'low' | 'medium' | 'high';
     date: string;
+    isCompleted?: boolean;
 }
 
 const EditSidebar: React.FC<EditSidebarProps> = ({ isOpen, onClose, onSave, todo }) => {
@@ -28,6 +29,23 @@ const EditSidebar: React.FC<EditSidebarProps> = ({ isOpen, onClose, onSave, todo
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [generalError, setGeneralError] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    // Handle click outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            const sidebar = document.querySelector('.edit-sidebar');
+            
+            if (isOpen && sidebar && !sidebar.contains(target)) {
+                onClose();
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen, onClose]);
 
     // Reset formData and errors when todo or isOpen changes
     useEffect(() => {
@@ -118,7 +136,7 @@ const EditSidebar: React.FC<EditSidebarProps> = ({ isOpen, onClose, onSave, todo
                     animate={{ x: 0 }}
                     exit={{ x: '100%' }}
                     transition={{ type: 'tween', duration: 0.3 }}
-                    className="fixed right-0 top-0 h-full w-96 bg-white shadow-lg p-6"
+                    className="fixed right-0 top-0 h-full w-96 bg-white shadow-lg p-6 edit-sidebar"
                 >
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-xl font-semibold">Edit Todo</h2>

@@ -35,6 +35,15 @@ export const TodoCard = ({
         high: 'bg-red-100 text-red-800 font-semibold'
     }
 
+    const handleCardClick = (e: React.MouseEvent) => {
+        // Don't trigger card click if clicking on checkbox or delete button
+        const target = e.target as HTMLElement;
+        if (target.closest('input[type="checkbox"]') || target.closest('button')) {
+            return;
+        }
+        onClick?.();
+    };
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -47,16 +56,16 @@ export const TodoCard = ({
             )}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
+            onClick={handleCardClick}
         >
-            <div className="flex items-start gap-3" onClick={onClick}>
+            <div className="flex items-start gap-3">
                 <input
                     type="checkbox"
                     checked={isCompleted}
                     onChange={onToggleComplete}
                     className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    readOnly
                 />
-                <div>
+                
                     <div className="flex-1">
                         <h3 
                             className={cn(
@@ -90,14 +99,13 @@ export const TodoCard = ({
                 <button
                     onClick={onDelete}
                     className={cn(
-                        'p-1 rounded-full transition-opacity duration-200',
+                        'absolute top-2 right-2 p-2 rounded-full transition-opacity duration-200',
                         'hover:bg-red-100 hover:text-red-600',
                         isHovered ? 'opacity-100' : 'opacity-0'
                     )}
                 >
                     <X size={16} />
                 </button>
-            </div>
         </motion.div>
     )
 };
