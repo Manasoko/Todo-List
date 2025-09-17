@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { X } from 'lucide-react'
-import { cn } from './utils'
+import { cn } from '../utils/utils'
 
 'use client'
 
@@ -62,7 +62,7 @@ export const TodoCard = ({
                 <input
                     type="checkbox"
                     checked={isCompleted}
-                    onChange={onToggleComplete}
+                    onChange={() => onToggleComplete?.()}
                     className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
                 

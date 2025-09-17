@@ -1,8 +1,8 @@
 export interface Task {
-    id: string | number,
-    title: string,
+    _id: string | number,
+    taskName: string,
     description: string,
-    dueDate: string,
+    dueDate: Date,
     priority: TaskPriority,
     completed: boolean
 }

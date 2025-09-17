@@ -5,7 +5,30 @@ import TaskModel from "../models/task.js";
 const router = Router();
 
 router.get("/tasks", async (req, res) => {
-  const tasks: Task[] = await TaskModel.find();
+  const tasks: Task[] = await TaskModel.aggregate([
+  {
+    $addFields: {
+      priorityValue: {
+        $switch: {
+          branches: [
+            { case: { $eq: ["$priority", "high"] }, then: 3 },
+            { case: { $eq: ["$priority", "medium"] }, then: 2 },
+            { case: { $eq: ["$priority", "low"] }, then: 1 }
+          ],
+          default: 0
+        }
+      }
+    }
+  },
+  {
+    $sort: {
+      completed: 1,        // uncompleted first (false=0, true=1)
+      priorityValue: -1,   // higher number (high priority) first
+      createdAt: -1        // most recent first
+    }
+  }
+]);
+
   if (tasks.length > 0) {
     return res.json(tasks);
   }
@@ -13,11 +36,13 @@ router.get("/tasks", async (req, res) => {
 });
 
 router.post("/task", async (req, res) => {
-  const taskName: string = req.body.name;
-  const dueDate: Date = req.body.date;
+  const taskName: string = req.body.taskName;
+  const description: string = req.body.description || "";
+  const dueDate: Date = req.body.dueDate;
   const priority: TaskPriority = req.body.priority || "medium";
   await TaskModel.create({
-    title: taskName,
+    taskName: taskName,
+    description: description,
     dueDate: dueDate,
     priority: priority,
   });
@@ -28,14 +53,20 @@ router.put("/task/:id", async (req, res) => {
   const reqId: string = req.params.id;
 
   const task = await TaskModel.findById(reqId);
-  const newTaskName: string = req.body.name || task?.title;
-  const newDueDate: string = req.body.date || task?.dueDate;
+  if (!req.body) {
+    return res.status(400).json({ message: "No data provided" });
+  }
+
+  const newTaskName: string = req.body.name || task?.taskName;
+  const newDueDate: Date = req.body.date || task?.dueDate;
   const newPriority: TaskPriority = req.body.priority || task?.priority;
+  const newDescription: string = req.body.description || task?.description;
 
   if (task) {
-    task.title = newTaskName;
+    task.taskName = newTaskName;
     task.dueDate = newDueDate;
     task.priority = newPriority;
+    task.description = newDescription;
     await task.save();
     return res.status(201).json({ message: "Task updated successfully" });
   } else {
@@ -49,6 +80,18 @@ router.delete("/task/:id", async (req, res) => {
   if (task) {
     await TaskModel.deleteOne({ _id: reqId });
     return res.status(200).json({ message: "Task deleted successfully" });
+  } else {
+    return res.status(404).json({ message: "Task not found" });
+  }
+});
+
+router.patch("/task/:id/toggle", async (req, res) => {
+  const reqId: string = req.params.id;
+  const task = await TaskModel.findById(reqId);
+  if (task) {
+    task.completed = !task.completed;
+    await task.save();
+    return res.status(200).json({ message: "Task completion toggled" });
   } else {
     return res.status(404).json({ message: "Task not found" });
   }

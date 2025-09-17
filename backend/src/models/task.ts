@@ -5,13 +5,13 @@ const { Schema, model } = mongoose;
 
 const taskSchema = new Schema<Task>(
   {
-    title: { type: String, required: true },
+    taskName: { type: String, required: true },
     description: { type: String, required: false },
-    dueDate: { type: String, required: true, default: "Later" },
+    dueDate: { type: Date, required: true },
     priority: {
       type: String,
       enum: ["low", "medium", "high"],
-      default: "medium",
+      default: "low",
     },
     completed: { type: Boolean, default: false },
   },
