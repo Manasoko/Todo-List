@@ -3,7 +3,7 @@ import axios from "axios";
 
 import { TodoForm } from "../components/form";
 import { TodoCard } from "../components/@ui/todo-card";
-import EditSidebar from "../components/@ui/editSidebar";
+import EditSidebar from "../components/@ui/edit-sidebar";
 import type { TodoData } from "../types/TodoData";
 import { formatSmartDate } from "../components/utils/utils";
 

@@ -22,9 +22,9 @@ router.get("/tasks", async (req, res) => {
   },
   {
     $sort: {
-      completed: 1,        // uncompleted first (false=0, true=1)
-      priorityValue: -1,   // higher number (high priority) first
-      createdAt: -1        // most recent first
+      completed: 1, 
+      priorityValue: -1, 
+      createdAt: -1  
     }
   }
 ]);

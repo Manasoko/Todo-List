@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoClose } from "react-icons/io5";
+
+import { Input, TextArea, Select } from "./inputs";
 import { Button } from "./button";
 import type { TodoData } from "../../types/TodoData";
 
@@ -159,7 +161,7 @@ const EditSidebar: React.FC<EditSidebarProps> = ({
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block mb-1">Task Name</label>
-              <input
+              <Input
                 type="text"
                 name="taskName"
                 value={formData.taskName}
@@ -177,7 +179,7 @@ const EditSidebar: React.FC<EditSidebarProps> = ({
 
             <div>
               <label className="block mb-1">Description</label>
-              <textarea
+              <TextArea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
@@ -188,17 +190,18 @@ const EditSidebar: React.FC<EditSidebarProps> = ({
 
             <div>
               <label className="block mb-1">Priority</label>
-              <select
+              <Select
                 name="priority"
                 value={formData.priority}
                 onChange={handleChange}
                 className="w-full p-2 border rounded"
                 disabled={isLoading}
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
+                options={[
+                  { label: "Low", value: "low" },
+                  { label: "Medium", value: "medium" },
+                  { label: "High", value: "high" },
+                ]}
+              />
             </div>
 
             <div>
